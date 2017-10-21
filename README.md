@@ -21,7 +21,7 @@ Before using the library you need to have:
 
 ### Callbacks
 
-All requests that are made to the MongoDB Stitch service occur asynchronously. Every method that sends a request has an optional parameter which takes a callback function that will be called when the operation is completed, successfully or not. The callbacks’ parameters are listed in the corresponding method documentation, but every callback has at least one parameter, *error*. If *error* is `null`, the operation has been executed successfully. Otherwise, *error* is an instance of the [StitchError class](*stitcherror-class) and contains the details of the error.
+All requests that are made to the MongoDB Stitch service occur asynchronously. Every method that sends a request has an optional parameter which takes a callback function that will be called when the operation is completed, successfully or not. The callbacks’ parameters are listed in the corresponding method documentation, but every callback has at least one parameter, *error*. If *error* is `null`, the operation has been executed successfully. Otherwise, *error* is an instance of the [StitchError class](#stitcherror-class) and contains the details of the error.
 
 ### StitchError Class
 
