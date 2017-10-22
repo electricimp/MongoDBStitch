@@ -21,9 +21,9 @@ Before using the library you need to have:
 
 ### Callbacks
 
-All requests that are made to the MongoDB Stitch service occur asynchronously. Every method that sends a request has an optional parameter which takes a callback function that will be called when the operation is completed, successfully or not. The callbacks’ parameters are listed in the corresponding method documentation, but every callback has at least one parameter, *error*. If *error* is `null`, the operation has been executed successfully. Otherwise, *error* is an instance of the [StitchError class](#stitcherror-class) and contains the details of the error.
+All requests that are made to the MongoDB Stitch service occur asynchronously. Every method that sends a request has an optional parameter which takes a callback function that will be called when the operation is completed, successfully or not. The callbacks’ parameters are listed in the corresponding method documentation, but every callback has at least one parameter, *error*. If *error* is `null`, the operation has been executed successfully. Otherwise, *error* is an instance of the [MongoDBStitchError class](#mongodbstitcherror-class) and contains the details of the error.
 
-### StitchError Class
+### MongoDBStitchError Class
 
 Represents an error returned by the library and has the following public properties:
 
@@ -41,11 +41,11 @@ Represents an error returned by the library and has the following public propert
 
 - *httpResponse* &mdash; A table of key-value strings holding the response body of the failed request, or `null` if *type* is *MONGO_DB_STITCH_ERROR.LIBRARY_ERROR*.
 
-### Constructor: StitchClient(*appId*)
+### Constructor: MongoDBStitch(*appId*)
 
 | Parameter | Data Type | Required? | Description |
 | --- | --- | --- | --- |
-| *appId* | String | Yes  | The Stitch application’s ID |
+| *appId* | String | Yes  | The Stitch application's ID |
 
 ### loginWithApiKey(*apiKey[, callback]*)
 
@@ -60,8 +60,8 @@ The method returns nothing. The result of the operation may be obtained via the 
 
 | Parameter | Data Type | Description |
 | --- | --- | --- |
-| *error* | StitchError | Error details, or `null` if the operation succeeds |
-| *response* | Table | Body of the HTTP response received from MongoDB Stitch service. Decoded from JSON. Key-value table, where key is a string, value is a string |
+| *error* | MongoDBStitchError | Error details, or `null` if the operation succeeds |
+| *response* | Table | Body of the HTTP response received from MongoDB Stitch service. Decoded from JSON. Key-value table, where key is a string, value is any type |
 
 ### executeNamedPipeline(*name[, args][, callback]*)
 
@@ -77,8 +77,8 @@ The method returns nothing. The result of the operation may be obtained via the 
 
 | Parameter | Data Type | Description |
 | --- | --- | --- |
-| *error* | StitchError | Error details, or `null` if the operation succeeds |
-| *response* | Table | Body of the HTTP response received from MongoDB Stitch service. Decoded from JSON. Key-value table, where key is a string, value is a string |
+| *error* | MongoDBStitchError | Error details, or `null` if the operation succeeds |
+| *response* | Table | Body of the HTTP response received from MongoDB Stitch service. Decoded from JSON. Key-value table, where key is a string, value is any type |
 
 ## Examples
 

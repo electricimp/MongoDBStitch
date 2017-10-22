@@ -22,6 +22,13 @@
 // ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 // OTHER DEALINGS IN THE SOFTWARE.
 
+// MongoDBStitch library provides an integration with MongoDB Stitch service
+// (https://www.mongodb.com/cloud/stitch)
+//
+// The current library version supports the following functionality:
+// - login to MongoDB Stitch using an application API key
+// - executing MongoDB Stitch Named Pipelines
+
 // MongoDBStitch library operation error types
 enum MONGO_DB_STITCH_ERROR {
     // the library detects an error, e.g. the library is wrongly initialized or
@@ -42,7 +49,7 @@ const MONGO_DB_STITCH_REQUEST_FAILED = "MongoDB Stitch request failed with statu
 const MONGO_DB_STITCH_NON_EMPTY_ARG = "Non empty argument required";
 
 // Auxiliary class, represents error returned by the library.
-class StitchError {
+class MongoDBStitchError {
     // error type, one of the MONGO_DB_STITCH_ERROR enum values
     type = null;
 
@@ -68,7 +75,7 @@ class StitchError {
 // Internal MongoDBStitch library constants
 const _MONGO_DB_STITCH_BASE_URL = "https://stitch.mongodb.com/api/client/v1.0";
 
-class StitchClient {
+class MongoDBStitch {
     static VERSION = "1.0.0";
 
     _appId = null;
@@ -77,6 +84,12 @@ class StitchClient {
     _refreshToken = null;
     _debug = null;
 
+    // MongoDBStitch constructor.
+    //
+    // Parameters:
+    //     appId : string            The Stitch application's ID.
+    //
+    // Returns:                      MongoDBStitch instance created.
     constructor(appId) {
         _appId = appId;
         if (appId) {
@@ -84,6 +97,22 @@ class StitchClient {
         }
     }
 
+    // Login to the Stitch application using an API key.
+    // Authentication is required every time the library is restarted.
+    //
+    // Parameters:
+    //     apiKey : string           API key for the authentication.
+    //     callback : function       Optional callback function executed once the operation
+    //         (optional)            is completed.
+    //                               The callback signature:
+    //                               callback(error, response), where
+    //                                   error :               Error details,
+    //                                     MongoDBStitchError  null if the operation succeeds.
+    //                                   response :            Body of the HTTP response received
+    //                                     table               from MongoDB Stitch service,
+    //                                                         decoded from JSON.
+    //
+    // Returns:                      Nothing
     function loginWithApiKey(apiKey, callback = null) {
         local error = _validateNonEmptyArg(apiKey, "apiKey");
         if (error) {
@@ -94,7 +123,25 @@ class StitchClient {
         _processRequest("POST", "/auth/api/key", { "key" : apiKey }, { "isAuth" : true }, callback);
     }
 
-    function executeNamedPipeline(name, args, callback = null) {
+    // Executes a MongoDB Stitch Named Pipeline.
+    // The pipeline should exist in the Stitch application.
+    //
+    // Parameters:
+    //     name : string             Name of the Named Pipeline.
+    //     args : table              Input parameters for the Named Pipeline.
+    //         (optional)            Key-value table, where key is a string, value is any type.
+    //     callback : function       Optional callback function executed once the operation
+    //         (optional)            is completed.
+    //                               The callback signature:
+    //                               callback(error, response), where
+    //                                   error :               Error details,
+    //                                     MongoDBStitchError  null if the operation succeeds.
+    //                                   response :            Body of the HTTP response received
+    //                                     table               from MongoDB Stitch service,
+    //                                                         decoded from JSON.
+    //
+    // Returns:                      Nothing
+    function executeNamedPipeline(name, args = null, callback = null) {
         local error = _validateNonEmptyArg(name, "name");
         if (error) {
             _invokeCallback(error, null, callback);
@@ -117,17 +164,20 @@ class StitchClient {
     //
     // Parameters:
     //     value : boolean           true to enable, false to disable
+    //
+    // Returns:                      Nothing
     function setDebug(value) {
         _debug = value;
     }
 
     // -------------------- PRIVATE METHODS -------------------- //
 
+    // Executes MongoDB Stitch pipeline
     function _executePipeline(stages, callback = null) {
         _processRequest("POST", "/pipeline", stages, null, callback);
     }
 
-    // Retrieves a new access token from refresh token.
+    // Retrieves a new access token from refresh token
     function _refreshAccessToken(callback) {
         _processRequest("POST", "/auth/newAccessToken", null, { "isAuth" : true, "useRefreshToken" : true }, callback);
     }
@@ -154,7 +204,7 @@ class StitchClient {
             local token = useRefreshToken ? _refreshToken : _accessToken;
             if (!token) {
                 _invokeCallback(
-                    StitchError(MONGO_DB_STITCH_ERROR.LIBRARY_ERROR, MONGO_DB_STITCH_UNAUTHORIZED),
+                    MongoDBStitchError(MONGO_DB_STITCH_ERROR.LIBRARY_ERROR, MONGO_DB_STITCH_UNAUTHORIZED),
                     null,
                     callback);
                 return;
@@ -205,7 +255,7 @@ class StitchClient {
                 }
             }.bindenv(this));
         } else {
-            local error = errType ? StitchError(errType, errDetails, response.body, httpStatus) : null;
+            local error = errType ? MongoDBStitchError(errType, errDetails, httpStatus, response.body) : null;
             if (!error && _getTableValue(options, "isAuth", false)) {
                 _setTokens(response.body);
             }
@@ -245,7 +295,7 @@ class StitchClient {
     // Validates the argument is not empty. Returns MONGO_DB_STITCH_ERROR.LIBRARY_ERROR if the check failed
     function _validateNonEmptyArg(param, paramName, logError = true) {
         if (param == null || typeof param == "string" && param.len() == 0) {
-            return StitchError(
+            return MongoDBStitchError(
                 MONGO_DB_STITCH_ERROR.LIBRARY_ERROR,
                 format("%s: %s", MONGO_DB_STITCH_NON_EMPTY_ARG, paramName));
         }
