@@ -1,69 +1,63 @@
 # MongoDBStitch Examples
 
-This document describes the sample applications provided with the [MongoDBStitch library](../README.md).
+This document describes the example applications provided with the [MongoDBStitch library](../README.md).
 
 The following example applications are provided:
-- DataSender
-- DataReceiver
+- **DataSender**, it sends data to MongoDB
+- **DataReceiver**, it receives data from MongoDB and confirms the receiving
 
-We recommend that you:
-- run DataSender on the agent of one device
-- run DataReceiver on the agent of a second device
+To see data receiving you need to run **DataReceiver** example after or in parallel with **DataSender** example. We recommend that you:
+- run **DataSender** on the agent of one IMP device
+- run **DataReceiver** on the agent of a second IMP device
 
-To see data receiving you need to run the DataReceiver example alongside the DataSender example.
-
-Each example is described below. If you wish to try one out, you'll find generic and example-specific setup instructions further down the page.
+Each example is described below. If you wish to try one out, you'll find generic and example-specific [setup instructions](#examples-setup-and-run) further down the page.
 
 ## DataSender
 
-This example inserts data to preconfigured MongoDB collection using preconfigured MongoDB Stitch named pipeline.
+This example inserts data into preconfigured MongoDB collection using preconfigured MongoDB Stitch named pipeline:
 
-### Notes
-
-- Data are sent every ten seconds.
+- Data are sent every 10 seconds.
 - Every data record contains:
-  - integer value, converted to string, which starts at 1 and increases by 1 with every record sent. It restarts from 1 when the example is restarted.
-  - `"measureTime"` attribute, which is the time in seconds since the epoch.
+  - `"value"` attribute - integer value, converted to string, which starts at 1 and increases by 1 with every record sent. It restarts from 1 everytime when the example is restarted.
+  - `"measureTime"` attribute - integer value, converted to string, which is the time in seconds since the epoch.
 
 ![DataSender example](https://imgur.com/fM75b66.png)
 
 ## DataReceiver
 
-This example receives new data from preconfigured MongoDB collection and confirms data receiving using preconfigured MongoDB Stitch named pipelines.
+This example receives new data from preconfigured MongoDB collection and confirms data receiving using preconfigured MongoDB Stitch named pipelines:
 
-### Notes
-
-- Data are received every fifteen seconds.
-- Every data record received is printed to the log.
-- Data receiving is confirmed by updating data `"received"` attribute using preconfigured MongoDB Stitch named pipeline.
+- Data are received every 15 seconds.
+- Every received data record is printed to the log.
+- Data receiving is confirmed by updating the data `"received"` attribute using preconfigured MongoDB Stitch named pipeline.
 
 ![DataReceiver example](https://imgur.com/iqYL7Lx.png)
 
-## Examples Setup
+## Examples Setup and Run
 
-Copy and paste the code linked below for the example you wish to run.  
+- Copy [DataSender source code](./DataSender.agent.nut) and paste it into Electric Imp IDE as IMP agent code of the device where you run **DataSender** example. Note, before running the code you will need to set the configuration constants as described in the [general setup](#setup-for-all-examples) below.
+- Copy [DataReceiver source code](./DataReceiver.agent.nut) and paste it into Electric Imp IDE as IMP agent code of the device where you run **DataReceiver** example. Note, before running the code you will need to set the configuration constants as described in the [general setup](#setup-for-all-examples) below.
+- Perform the [general setup](#setup-for-all-examples) applicable for the both examples.
+- Perform [additional setup for DataSender example](#additional-setup-for-datasender-example).
+- Perform [additional setup for DataReceiver example](#additional-setup-for-datareceiver-example).
+- Build and Run **DataSender** IMP agent code.
+- Check from the logs in Electric Imp IDE that data insertions are successful.
+- Build and Run **DataReceiver** IMP agent code.
+- Check from the logs in Electric Imp IDE that data receivings are successful.
 
-- [DataSender](./DataSender.agent.nut)
-- [DataReceiver](./DataReceiver.agent.nut)
-
-Before running an example application you need to set the configuration constants in the application (agent) source code. The instructions below will walk you through the necessary steps.
-
-After the general setup you need to perform additional example-specific setup
-
-- [Additional setup for the DataSender example](#additional-setup-for-the-datasender-example)
-- [Additional setup for the DataReceiver example](#additional-setup-for-the-datareceiver-example)
+You may skip the steps related to **DataReceiver** example if you try **DataSender** example only.
 
 ### Setup For All Examples
 
 #### MongoDB Stitch Account Configuration
 
 In this section the following MongoDB Stitch entities are created and configured:
-- MongoDB Atlas cluster
+- MongoDB Atlas Cluster
 - MongoDB Stitch Application
 - API Key Authentication for the Stitch Application
 - MongoDB Collection that will be used to store the Examples data
 
-##### Configuration Steps
+##### Create MongoDB Atlas Cluster
 
 - Login at [MongoDB Atlas account](https://cloud.mongodb.com) in your web browser.
 - If you have an existing Atlas cluster that you want to work with, skip this step, otherwise 
@@ -75,17 +69,25 @@ In this section the following MongoDB Stitch entities are created and configured
     ![Select M0 Cluster](https://imgur.com/6zFNb7O.png)
     - In the bottom of the pop up enter Admin **Username** and **Password** and click **Confirm & Deploy**.
     ![Deploy Cluster](https://imgur.com/hUSnhwR.png)
-    - Wait until your Cluster is created.
+    - Wait until your Cluster is deployed (this may take several minutes).
+    
+##### Create MongoDB Stitch Application
+
 - Click **Stitch Apps** in the **PROJECT** menu and click **Create New Application** button.
 ![Create new app](https://imgur.com/Sc4XqTn.png)
 - In the **Create a new application** pop up
   - Enter **Application Name**, e.g. `testApp`.
+  - Choose a **Cluster**.
   - Click **Create**.
     ![Create app](https://imgur.com/HETHghw.png)
+  - Wait until your Application is created (this may take several seconds).
 - You will be redirected to your Stitch Application page.
 - Click **Clients** in the **STITCH CONSOLE** menu.
-Copy your Application ID, it will be used as the *MONGO_DB_STITCH_APPLICATION_ID* Examples constant.
+- Copy (click **COPY APP ID**) and save somewhere **App ID** of your Stitch application. It will be used as the value of *MONGO_DB_STITCH_APPLICATION_ID* constant in the example code for IMP agent.
 ![Copy app id](https://imgur.com/LP2iNUV.png)
+
+##### Enable API Key Authentication for the Stitch Application
+
 - Click **Authentication** in the **CONTROL** menu.
 - Click **Edit** for **API Keys** provider.
   ![Edit Api Keys](https://imgur.com/QXPHxga.png)
@@ -96,14 +98,17 @@ Copy your Application ID, it will be used as the *MONGO_DB_STITCH_APPLICATION_ID
   - Enter a name for the API key into the text input, e.g. `test`.
   - Click **Save**.
     ![Save Api Key](https://imgur.com/auy8qsA.png)
-  - Click **COPY** for your API key, it will be used as the *MONGO_DB_STITCH_API_KEY* Examples constant.
+  - Copy (click **COPY**) and save somewhere **API key** of your Stitch application. It will be used as the value of *MONGO_DB_STITCH_API_KEY* constant in the example code for IMP agent.
     ![Copy Api Key](https://imgur.com/5A4Fa7E.png)
   - Close the **Edit Auth Provider** pop up.
+
+##### Create MongoDB Collection
+
 - Click **mongodb-atlas** in the **ATLAS CLUSTERS** menu and click **NEW** for **MongoDB Collections**.
 ![New Collection](https://imgur.com/TBJtbrl.png)
 - Enter `testdb` into **Database** name and `data` into **Collection** name.
-![Create Collection](https://imgur.com/ruhTVfr.png)
 - Click **CREATE**.
+![Create Collection](https://imgur.com/ruhTVfr.png)
 - Click to your newly created collection.
 ![Created Collection](https://imgur.com/qKadkif.png)
 - Click **Top-Level Document**.
@@ -122,19 +127,19 @@ Copy your Application ID, it will be used as the *MONGO_DB_STITCH_APPLICATION_ID
 - Click **DELETE** for the existing filter and click **SAVE**.
 ![Collection Filters](https://imgur.com/zntYVVm.png)
 
-#### Constants Setup
+#### IMP Agent Constants Setup
 
-Set the example code configuration constants *MONGO_DB_STITCH_APPLICATION_ID* and *MONGO_DB_STITCH_API_KEY* with the values retrieved in the previous steps. You can use the same configuration constants when running examples in parallel.
+- For *MONGO_DB_STITCH_APPLICATION_ID* and *MONGO_DB_STITCH_API_KEY* constants in the example code for IMP agent: set the values you retrieved and saved in the previous steps. Set the same values for the both examples - **DataSender** and **DataReceiver**.
 ![Configuration Constants](https://imgur.com/GtK78op.png)
 
-### Additional Setup for the DataSender Example
+### Additional Setup for DataSender Example
 
-This must be performed **before** you run the DataSender example code. 
+This must be performed **before** you run **DataSender** example code. 
 
 In this section the following MongoDB Stitch entities are created and configured:
 - MongoDB Stitch Named Pipeline **testInsertData** that will be used to store DataSender Example data into the MongoDB Collection configured in the previous steps
 
-##### Configuration Steps
+##### Create MongoDB Stitch Named Pipeline: testInsertData
 
 - In your [MongoDB Atlas account](https://cloud.mongodb.com) select your Stitch Application, created during the previous steps.
 - Click **Pipelines** in the **CONTROL** menu and click the **NEW PIPELINE** button.
@@ -149,8 +154,8 @@ In this section the following MongoDB Stitch entities are created and configured
 - Set the **Bind data to %%vars** switch to enabled.
 - Enter `{"data" : "%%args.data"}` into **Bind data** text field.
 ![testInsertData vars](https://imgur.com/43MdIVD.png)
-- Choose **built-in** in **SERVICE** drop-down list if it has different value.
-- Choose **literal** in **ACTION** drop-down list if it has different value.
+- Choose **built-in** in **SERVICE** drop-down list.
+- Choose **literal** in **ACTION** drop-down list.
 - Enter the following into the pipeline arguments text field
 ```
 {
@@ -181,15 +186,15 @@ In this section the following MongoDB Stitch entities are created and configured
 ![testInsertData pipeline](https://imgur.com/sWu6340.png)
 - Click **SAVE**.
 
-### Additional Setup for the DataReceiver Example
+### Additional Setup for DataReceiver Example
 
-This must be performed **before** you run the DataReceiver example code. 
+This must be performed **before** you run **DataReceiver** example code. 
 
 In this section the following MongoDB Stitch entities are created and configured:
 - MongoDB Stitch Named Pipeline **testFindData** that will be used to receive data from the MongoDB Collection configured in the previous steps
-- MongoDB Stitch Named Pipeline **testConfirmData** that will be used to confirm data receiving
+- MongoDB Stitch Named Pipeline **testConfirmData** that will be used to confirm the data receiving
 
-##### Configuration Steps
+##### Create MongoDB Stitch Named Pipeline: testFindData
 
 - In your [MongoDB Atlas account](https://cloud.mongodb.com) select your Stitch Application, created during the previous steps.
 - Click **Pipelines** in the **CONTROL** menu and click the **NEW PIPELINE** button.
@@ -215,6 +220,7 @@ In this section the following MongoDB Stitch entities are created and configured
 ![testFindData pipeline](https://imgur.com/MJJ64qZ.png)
 - Click **SAVE**.
 
+##### Create MongoDB Stitch Named Pipeline: testConfirmData
 
 - Click the **NEW PIPELINE** button.
 - Enter `testConfirmData` into **New Pipeline Name** field.
