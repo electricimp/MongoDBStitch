@@ -1,6 +1,13 @@
 # Test Instructions
 
-The instructions will show you how to set up the tests for MongoDBStitch library.
+The tests in the current directory are intended to check the behavior of the MongoDBStitch library. The current set of tests check:
+- login to Stitch using API key
+- execution of Stitch Named Pipelines which cover all standard mongodb-atlas services: insert, update, find and delete
+- processing of wrong parameters passed into the library methods
+
+The tests are written for and should be used with [impTest](https://github.com/electricimp/impTest). See *impTest* documentation for the details of how to configure and run the tests.
+
+The tests for MongoDBStitch library require pre-setup described below.
 
 ## MongoDB Stitch Account Configuration
 
