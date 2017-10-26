@@ -62,8 +62,7 @@ class DataSender {
             function (error, response) {
                 if (error) {
                     server.error("Data insertion failed: " + error.details);
-                }
-                else {
+                } else {
                     server.log("Data inserted successfully:");
                     server.log(http.jsonencode(data.data));
                 }
@@ -79,8 +78,7 @@ class DataSender {
         _stitchClient.loginWithApiKey(_apiKey, function (error, response) {
             if (error) {
                 server.error("MongoDB Stitch authentication failed: " + error.details);
-            }
-            else {
+            } else {
                 sendData();
             }
         }.bindenv(this));

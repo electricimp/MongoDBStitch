@@ -51,8 +51,7 @@ class DataReceiver {
             function (error, response) {
                 if (error) {
                     server.error("Data receiving failed: " + error.details);
-                }
-                else {
+                } else {
                     local records = response.result[0];
                     if (records.len() > 0) {
                         local ids = [];
@@ -70,8 +69,7 @@ class DataReceiver {
                                     server.error("Confirm data receiving failed: " + error.details);
                                 }
                             }.bindenv(this));
-                    }
-                    else {
+                    } else {
                         server.log("No new data received");
                     }
                 }
@@ -87,8 +85,7 @@ class DataReceiver {
         _stitchClient.loginWithApiKey(_apiKey, function (error, response) {
             if (error) {
                 server.error("MongoDB Stitch authentication failed: " + error.details);
-            }
-            else {
+            } else {
                 receiveData();
             }
         }.bindenv(this));

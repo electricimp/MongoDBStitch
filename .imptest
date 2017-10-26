@@ -1,0 +1,14 @@
+{
+    "modelId": "bNA7KXCkI9jB" /* sender */,
+    "devices": [
+        "234776801163a9ee" /* 234776801163a9ee */
+    ],
+    "agentFile": "MongoDBStitch.agent.lib.nut",
+    "deviceFile": false,
+    "stopOnFailure": false,
+    "timeout": 30,
+    "tests": [
+        "*.test.nut",
+        "tests/**/*.test.nut"
+    ]
+}
