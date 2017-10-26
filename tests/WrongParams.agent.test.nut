@@ -156,4 +156,3 @@ class WrongParamsTestCase extends ImpTestCase {
         return error && error.type == MONGO_DB_STITCH_ERROR.MONGO_DB_STITCH_REQUEST_FAILED;
     }    
 }
-
