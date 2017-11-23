@@ -1,7 +1,7 @@
 {
-    "modelId": "bNA7KXCkI9jB" /* sender */,
+    "modelId": "SSsAPk6ZHOkQ" /* sender */,
     "devices": [
-        "234776801163a9ee" /* 234776801163a9ee */
+        "234776801163a9ee" /* dev */
     ],
     "agentFile": "MongoDBStitch.agent.lib.nut",
     "deviceFile": false,

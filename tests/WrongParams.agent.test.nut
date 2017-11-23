@@ -42,19 +42,19 @@ class WrongParamsTestCase extends ImpTestCase {
         ]);
     }
 
-    function testWrongPipelineName() {
+    function testWrongFunctionName() {
         return Promise.all([
-            _testWrongPipelineName(null),
-            _testWrongPipelineName("")
+            _testWrongFunctionName(null),
+            _testWrongFunctionName("")
         ]);
     }
 
-    function testExecutePipelineWithoutLogin() {
+    function testExecuteFunctionWithoutLogin() {
         local _stitchClient = MongoDBStitch(MONGO_DB_STITCH_APPLICATION_ID);
         return Promise(function (resolve, reject) {
-            _stitchClient.executeNamedPipeline("__test", null, function (error, response) {
+            _stitchClient.executeFunction("__test", null, function (error, response) {
                 if (!_isLibraryError(error)) {
-                    return reject("execute pipeline without login accepted");
+                    return reject("execute function without login accepted");
                 }
                 return resolve("");
             }.bindenv(this));
@@ -85,16 +85,16 @@ class WrongParamsTestCase extends ImpTestCase {
         }.bindenv(this));
     }
 
-    function testNonexistentPipelineName() {
+    function testNonexistentFunction() {
         local _stitchClient = MongoDBStitch(MONGO_DB_STITCH_APPLICATION_ID);
         return Promise(function (resolve, reject) {
             _stitchClient.loginWithApiKey(MONGO_DB_STITCH_API_KEY, function (error, response) {
                 if (error) {
                     return reject("login failed");
                 }
-                _stitchClient.executeNamedPipeline("__test", null, function (error, response) {
+                _stitchClient.executeFunction("__test", null, function (error, response) {
                     if (!_isRequestFailedError(error)) {
-                        return reject("wrong error type for nonexistent pipeline name");
+                        return reject("wrong error type for nonexistent function");
                     }
                     return resolve("");
                 }.bindenv(this));
@@ -109,9 +109,9 @@ class WrongParamsTestCase extends ImpTestCase {
                 if (!_isLibraryError(error)) {
                     return reject("wrong appId accepted in loginWithApiKey: '" + appId + "'");
                 }
-                _stitchClient.executeNamedPipeline("__test", null, function (error, response) {
+                _stitchClient.executeFunction("__test", null, function (error, response) {
                     if (!_isLibraryError(error)) {
-                        return reject("wrong appId accepted in executeNamedPipeline: '" + appId + "'");
+                        return reject("wrong appId accepted in executeFunction: '" + appId + "'");
                     }
                     return resolve("");
                 }.bindenv(this));
@@ -131,16 +131,16 @@ class WrongParamsTestCase extends ImpTestCase {
         }.bindenv(this));
     }
 
-    function _testWrongPipelineName(pipelineName) {
+    function _testWrongFunctionName(functionName) {
         local _stitchClient = MongoDBStitch(MONGO_DB_STITCH_APPLICATION_ID);
         return Promise(function (resolve, reject) {
             _stitchClient.loginWithApiKey(MONGO_DB_STITCH_API_KEY, function (error, response) {
                 if (error) {
                     return reject("login failed");
                 }
-                _stitchClient.executeNamedPipeline(pipelineName, null, function (error, response) {
+                _stitchClient.executeFunction(functionName, null, function (error, response) {
                     if (!_isLibraryError(error)) {
-                        return reject("wrong pipeline name accepted: '" + pipelineName + "'");
+                        return reject("wrong function name accepted: '" + functionName + "'");
                     }
                     return resolve("");
                 }.bindenv(this));

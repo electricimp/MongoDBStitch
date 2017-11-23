@@ -25,15 +25,15 @@
 const MONGO_DB_STITCH_APPLICATION_ID = "@{MONGO_DB_STITCH_APPLICATION_ID}";
 const MONGO_DB_STITCH_API_KEY        = "@{MONGO_DB_STITCH_API_KEY}";
 
-const DELETE_DATA_PIPELINE_NAME = "imptestDeleteData";
-const DELETE_ONE_PIPELINE_NAME =  "imptestDeleteOne";
-const FIND_DATA_PIPELINE_NAME   = "imptestFindData";
-const INSERT_DATA_PIPELINE_NAME = "imptestInsertData";
-const UPDATE_DATA_PIPELINE_NAME = "imptestUpdateData";
+const DELETE_DATA_FUNCTION_NAME = "imptestDeleteData";
+const DELETE_ONE_FUNCTION_NAME  = "imptestDeleteOne";
+const FIND_DATA_FUNCTION_NAME   = "imptestFindData";
+const INSERT_DATA_FUNCTION_NAME = "imptestInsertData";
+const UPDATE_DATA_FUNCTION_NAME = "imptestUpdateData";
 
-// Test case for execution of MongoDBStitch named pipelines.
-// Predefined pipelines covers all standard mongodb-atlas services: insert, update, find and delete.
-class NamedPipelinesTestCase extends ImpTestCase {
+// Test case for execution of MongoDBStitch functions.
+// Predefined functions covers all standard mongodb-atlas services: insert, update, find and delete.
+class FunctionsTestCase extends ImpTestCase {
     _recordId = null;
     _stitchClient = null;
 
@@ -59,9 +59,9 @@ class NamedPipelinesTestCase extends ImpTestCase {
 
     function tearDown() {
         return Promise(function (resolve, reject) {
-            _stitchClient.executeNamedPipeline(DELETE_DATA_PIPELINE_NAME, null, function (error, response) {
+            _stitchClient.executeFunction(DELETE_DATA_FUNCTION_NAME, null, function (error, response) {
                 if (error) {
-                    return reject(DELETE_DATA_PIPELINE_NAME + " pipeline execution failed");
+                    return reject(DELETE_DATA_FUNCTION_NAME + " function execution failed");
                 } else {
                     return resolve("");
                 }
@@ -105,9 +105,9 @@ class NamedPipelinesTestCase extends ImpTestCase {
                 return Promise(function (resolve, reject) {
                     local id = _recordId.tostring()
                     local newValue = "test_value";
-                    _stitchClient.executeNamedPipeline(UPDATE_DATA_PIPELINE_NAME, { "id" : id, "value" : newValue }, function (error, response) {
+                    _stitchClient.executeFunction(UPDATE_DATA_FUNCTION_NAME, [ id, newValue ], function (error, response) {
                         if (error) {
-                            return reject(UPDATE_DATA_PIPELINE_NAME + " pipeline execution failed");
+                            return reject(UPDATE_DATA_FUNCTION_NAME + " function execution failed");
                         } else {
                             _findDataById(id).
                                 then(function (value) {
@@ -134,9 +134,9 @@ class NamedPipelinesTestCase extends ImpTestCase {
         local arr = array(elementsNumber, 0);
         return Promise.all(arr.map(function (val) { return _insertData(); }.bindenv(this))).then(
             function (value) {
-                _stitchClient.executeNamedPipeline(DELETE_DATA_PIPELINE_NAME, null, function (error, response) {
+                _stitchClient.executeFunction(DELETE_DATA_FUNCTION_NAME, null, function (error, response) {
                     if (error) {
-                        return reject(DELETE_DATA_PIPELINE_NAME + " pipeline execution failed");
+                        return reject(DELETE_DATA_FUNCTION_NAME + " function execution failed");
                     } else {
                         local ids = [];
                         for (local i = 1; i <= _recordId; i++) {
@@ -170,9 +170,9 @@ class NamedPipelinesTestCase extends ImpTestCase {
         return Promise.all(arr.map(function (val) { return _insertData(); }.bindenv(this))).then(
             function (value) {
                 local testedId = _recordId - 1;
-                _stitchClient.executeNamedPipeline(DELETE_ONE_PIPELINE_NAME, { "id" : testedId.tostring() }, function (error, response) {
+                _stitchClient.executeFunction(DELETE_ONE_FUNCTION_NAME, [ testedId.tostring() ], function (error, response) {
                     if (error) {
-                        return reject(DELETE_ONE_PIPELINE_NAME + " pipeline execution failed");
+                        return Promise.reject(DELETE_ONE_FUNCTION_NAME + " function execution failed");
                     } else {
                         _findDataById(testedId).then(
                             function (value) {
@@ -196,12 +196,12 @@ class NamedPipelinesTestCase extends ImpTestCase {
 
     function _findDataById(id) {
         return Promise(function (resolve, reject) {
-            _stitchClient.executeNamedPipeline(FIND_DATA_PIPELINE_NAME, { "id" : id.tostring() }, function (error, response) {
+            _stitchClient.executeFunction(FIND_DATA_FUNCTION_NAME, [ id.tostring() ], function (error, response) {
                 if (error) {
-                    return reject(FIND_DATA_PIPELINE_NAME + " pipeline execution failed");
+                    return reject(FIND_DATA_FUNCTION_NAME + " function execution failed");
                 } else {
-                    if (response && "result" in response && typeof response.result == "array") {
-                        return resolve(response.result[0]);
+                    if (response && typeof response == "array") {
+                        return resolve(response);
                     } else {
                         return reject("unexpected format of response");
                     }
@@ -212,9 +212,9 @@ class NamedPipelinesTestCase extends ImpTestCase {
 
     function _insertData() {
         return Promise(function (resolve, reject) {
-            _stitchClient.executeNamedPipeline(INSERT_DATA_PIPELINE_NAME, _getData(), function (error, response) {
+            _stitchClient.executeFunction(INSERT_DATA_FUNCTION_NAME, _getData(), function (error, response) {
                 if (error) {
-                    return reject(INSERT_DATA_PIPELINE_NAME + " pipeline execution failed");
+                    return reject(INSERT_DATA_FUNCTION_NAME + " function execution failed");
                 } else {
                     return resolve("");
                 }
@@ -224,7 +224,6 @@ class NamedPipelinesTestCase extends ImpTestCase {
 
     function _getData() {
         _recordId++;
-        return { "id" : _recordId.tostring(), "value" : "val" + _recordId.tostring() };
+        return [ _recordId.tostring(), "val" + _recordId.tostring() ];
     }
 }
- 
