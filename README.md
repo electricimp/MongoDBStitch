@@ -5,7 +5,7 @@ This library lets your agent code to work with [MongoDB Stitch service](https://
 This version of the library supports the following functionality:
 
 - login to MongoDB Stitch using an application API key
-- executing a Named Pipeline
+- executing a Function
 
 **To add this library to your project, add** `#require "MongoDBStitch.agent.lib.nut:1.0.0"` **to the top of your agent code.**
 
@@ -15,7 +15,7 @@ Before using the library you need to have:
 
 - id of the Stitch application ([how to create a Stitch App](https://docs.mongodb.com/stitch/getting-started))
 - API key of the Stitch application ([how to enable and configure API Key Authentication](https://docs.mongodb.com/stitch/auth/apikey-auth))
-- (if your IMP application uses Named Pipelines) name(s) of the Named Pipeline(s) and knowledge about their input parameters and response ([Named Pipelines overview](https://docs.mongodb.com/stitch/reference/namedpipelines/))
+- (if your IMP application uses Functions) name(s) of the Function(s) and knowledge about their input parameters and response ([Functions overview](https://docs.mongodb.com/stitch/functions/))
 
 ## Library Usage
 
@@ -67,14 +67,14 @@ The method returns nothing. The result of the operation may be obtained via the 
 | *error* | MongoDBStitchError | Error details, or `null` if the operation succeeds |
 | *response* | Table | Body of the HTTP response received from MongoDB Stitch service. Decoded from JSON. Key-value table, where key is a string, value is any type |
 
-#### executeNamedPipeline(*name[, args][, callback]*)
+#### executeFunction(*name[, args][, callback]*)
 
-Execute a Named Pipeline. The pipeline should exist in the Stitch application.
+Execute the specified Function. The Function should exist in the Stitch application.
 
 | Parameter | Data Type | Required? | Description |
 | --- | --- | --- | --- |
-| *name* | String | Yes | Name of the Named Pipeline |
-| *args* | Table | Optional | Input parameters for the Named Pipeline. Key-value table, where key is a string, value is any type |
+| *name* | String | Yes | Name of the Function |
+| *args* | Array of any type | Optional | Input parameters for the Function |
 | *callback* | Function | Optional | Executed once the operation is completed |
 
 The method returns nothing. The result of the operation may be obtained via the *callback* function, which has the following parameters:
