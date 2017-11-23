@@ -14,24 +14,24 @@ Each example is described below. If you wish to try one out, you'll find generic
 
 ## DataSender
 
-This example inserts data into preconfigured MongoDB collection using preconfigured MongoDB Stitch named pipeline:
+This example inserts data into preconfigured MongoDB collection using preconfigured MongoDB Stitch Function:
 
 - Data are sent every 10 seconds.
 - Every data record contains:
-  - `"value"` attribute - integer value, converted to string, which starts at 1 and increases by 1 with every record sent. It restarts from 1 everytime when the example is restarted.
+  - `"value"` attribute - integer value, converted to string, which starts at 1 and increases by 1 with every record sent. It restarts from 1 every time when the example is restarted.
   - `"measureTime"` attribute - integer value, converted to string, which is the time in seconds since the epoch.
 
-![DataSender example](https://imgur.com/fM75b66.png)
+![DataSender example](../png/SenderExample.png?raw=true)
 
 ## DataReceiver
 
-This example receives new data from preconfigured MongoDB collection and confirms data receiving using preconfigured MongoDB Stitch named pipelines:
+This example receives new data from preconfigured MongoDB collection and confirms data receiving using preconfigured MongoDB Stitch Functions:
 
 - Data are received every 15 seconds.
 - Every received data record is printed to the log.
-- Data receiving is confirmed by updating the data `"received"` attribute using preconfigured MongoDB Stitch named pipeline.
+- Data receiving is confirmed by updating the data `"received"` attribute using preconfigured MongoDB Stitch Function.
 
-![DataReceiver example](https://imgur.com/iqYL7Lx.png)
+![DataReceiver example](../png/ReceiverExample.png?raw=true)
 
 ## Examples Setup and Run
 
@@ -62,196 +62,140 @@ In this section the following MongoDB Stitch entities are created and configured
 - Login at [MongoDB Atlas account](https://cloud.mongodb.com) in your web browser.
 - If you have an existing Atlas cluster that you want to work with, skip this step, otherwise 
   - click **Clusters** in the **PROJECT** menu and click the **Build a New Cluster** button.
-    ![Build a new cluster](https://imgur.com/LgH6JXj.png)
+    ![Build a new cluster](../png/CreateCluster1.png?raw=true)
   - In the **Build Your New Cluster** pop up
     - Optionally modify **Cluster Name**.
     - Click **Select** for **M0 Instance Size**.
-    ![Select M0 Cluster](https://imgur.com/6zFNb7O.png)
-    - In the bottom of the pop up enter Admin **Username** and **Password** and click **Confirm & Deploy**.
-    ![Deploy Cluster](https://imgur.com/hUSnhwR.png)
+    ![Select M0 Cluster](../png/CreateCluster2.png?raw=true)
+    - Click **Confirm & Deploy**.
+    ![Deploy Cluster](../png/CreateCluster3.png?raw=true)
     - Wait until your Cluster is deployed (this may take several minutes).
     
 ##### Create MongoDB Stitch Application
 
 - Click **Stitch Apps** in the **PROJECT** menu and click **Create New Application** button.
-![Create new app](https://imgur.com/Sc4XqTn.png)
+![Create new app](../png/CreateApp1.png?raw=true)
 - In the **Create a new application** pop up
   - Enter **Application Name**, e.g. `testApp`.
   - Choose a **Cluster**.
   - Click **Create**.
-    ![Create app](https://imgur.com/HETHghw.png)
+    ![Create app](../png/CreateApp2.png?raw=true)
   - Wait until your Application is created (this may take several seconds).
 - You will be redirected to your Stitch Application page.
-- Click **Clients** in the **STITCH CONSOLE** menu.
-- Copy (click **COPY APP ID**) and save somewhere **App ID** of your Stitch application. It will be used as the value of *MONGO_DB_STITCH_APPLICATION_ID* constant in the example code for IMP agent.
-![Copy app id](https://imgur.com/LP2iNUV.png)
+- Click **Clients** in the application menu.
+- Copy (click **COPY**) and save somewhere **App ID** of your Stitch application. It will be used as the value of *MONGO_DB_STITCH_APPLICATION_ID* constant in the example code for IMP agent.
+![Copy app id](../png/CreateApp3.png?raw=true)
 
 ##### Enable API Key Authentication for the Stitch Application
 
 - Click **Authentication** in the **CONTROL** menu.
 - Click **Edit** for **API Keys** provider.
-  ![Edit Api Keys](https://imgur.com/QXPHxga.png)
+  ![Edit Api Keys](../png/CreateApiKey1.png?raw=true)
 - In the **Edit Auth Provider** pop up
   - Set the **API Keys** switch to enabled.
   - Click **CREATE API KEY**.
-    ![Create Api Key](https://imgur.com/hzF5l4T.png)
+    ![Create Api Key](../png/CreateApiKey2.png?raw=true)
   - Enter a name for the API key into the text input, e.g. `test`.
   - Click **Save**.
-    ![Save Api Key](https://imgur.com/auy8qsA.png)
+    ![Save Api Key](../png/CreateApiKey3.png?raw=true)
   - Copy (click **COPY**) and save somewhere **API key** of your Stitch application. It will be used as the value of *MONGO_DB_STITCH_API_KEY* constant in the example code for IMP agent.
-    ![Copy Api Key](https://imgur.com/5A4Fa7E.png)
+    ![Copy Api Key](../png/CreateApiKey4.png?raw=true)
   - Close the **Edit Auth Provider** pop up.
 
 ##### Create MongoDB Collection
 
 - Click **mongodb-atlas** in the **ATLAS CLUSTERS** menu and click **NEW** for **MongoDB Collections**.
-![New Collection](https://imgur.com/TBJtbrl.png)
+![New Collection](../png/CreateCollection1.png?raw=true)
 - Enter `testdb` into **Database** name and `data` into **Collection** name.
 - Click **CREATE**.
-![Create Collection](https://imgur.com/ruhTVfr.png)
+![Create Collection](../png/CreateCollection2.png?raw=true)
 - Click to your newly created collection.
-![Created Collection](https://imgur.com/qKadkif.png)
+![Created Collection](../png/CreateCollection3.png?raw=true)
 - Click **Top-Level Document**.
-![Top-Level Document](https://imgur.com/ArQcZCv.png)
+![Top-Level Document](../png/CreateCollection4.png?raw=true)
 - Modify **READ** permission on top-level document to `{}`.
 - Modify **WRITE** permission on top-level document to `{}`.
 - Click **SAVE**.
-![Top-Level Document Modification](https://imgur.com/n5Z6Wpl.png)
+![Top-Level Document Modification](../png/CreateCollection5.png?raw=true)
 - Click **owner_id** field.
 - Click the **delete** (**x**) on the right side.
-![Delete owner_id](https://imgur.com/vGEyz3u.png)
-- In the **Confirm** pop up click **OK** to confirm **owner_id** field deleting.
+![Delete owner_id](../png/CreateCollection6.png?raw=true)
+- In the confirmation pop up click **Delete Field** to confirm **owner_id** field deleting.
 - Click **SAVE**.
-![Collection Rules](https://imgur.com/N36mOem.png)
+![Collection Rules](../png/CreateCollection7.png?raw=true)
 - Click the **Filters** tab.
 - Click **DELETE** for the existing filter and click **SAVE**.
-![Collection Filters](https://imgur.com/zntYVVm.png)
+![Collection Filters](../png/CreateCollection8.png?raw=true)
 
 #### IMP Agent Constants Setup
 
 - For *MONGO_DB_STITCH_APPLICATION_ID* and *MONGO_DB_STITCH_API_KEY* constants in the example code for IMP agent: set the values you retrieved and saved in the previous steps. Set the same values for the both examples - **DataSender** and **DataReceiver**.
-![Configuration Constants](https://imgur.com/GtK78op.png)
+![Configuration Constants](../png/ConstSetup.png?raw=true)
 
 ### Additional Setup for DataSender Example
 
 This must be performed **before** you run **DataSender** example code. 
 
 In this section the following MongoDB Stitch entities are created and configured:
-- MongoDB Stitch Named Pipeline **testInsertData** that will be used to store DataSender Example data into the MongoDB Collection configured in the previous steps
+- MongoDB Stitch Function **testInsertData** that will be used to store DataSender Example data into the MongoDB Collection configured in the previous steps
 
-##### Create MongoDB Stitch Named Pipeline: testInsertData
+##### Create MongoDB Stitch Function: testInsertData
 
 - In your [MongoDB Atlas account](https://cloud.mongodb.com) select your Stitch Application, created during the previous steps.
-- Click **Pipelines** in the **CONTROL** menu and click the **NEW PIPELINE** button.
-![New Pipeline](https://imgur.com/E3gvwiz.png)
-- Enter `testInsertData` into **New Pipeline Name** field.
-- Click **+ ADD PARAMETER**.
-- Enter `data` into **Parameter Name** field.
-- Set the **Required** switch to enabled.
-![testInsertData pipeline config](https://imgur.com/dHajWND.png)
-- Click **EDIT** in the pipeline Stage.
-![testInsertData edit](https://imgur.com/XmZu7UB.png)
-- Set the **Bind data to %%vars** switch to enabled.
-- Enter `{"data" : "%%args.data"}` into **Bind data** text field.
-![testInsertData vars](https://imgur.com/43MdIVD.png)
-- Choose **built-in** in **SERVICE** drop-down list.
-- Choose **literal** in **ACTION** drop-down list.
-- Enter the following into the pipeline arguments text field
+- Click **Functions** in the **CONTROL** menu and click the **Create New Function** button.
+![New Function](../png/Sender1.png?raw=true)
+- Enter `testInsertData` into **Function Name** field.
+- Click **Function Editor** tab.
+![testInsertData Function](../png/Sender2.png?raw=true)
+- Enter the following code into the Function Editor text field
 ```
-{
-  "items" : [ {
-    "data" : "%%vars.data",
-    "received" : false
-  } ]
-}
+exports = function(data) {
+  var collection = context.services.get("mongodb-atlas").db('testdb').collection('data');
+  return collection.insertOne({ "data" : data, "received" : false });
+};
 ```
-- Click **Done**.
-![testInsertData first stage](https://imgur.com/QrHPd8A.png)
-- Click **+ Add Stage**.
-![Add Stage](https://imgur.com/Sq2VIFn.png)
-- Click **EDIT** in the second Stage.
-![Edit second stage](https://imgur.com/SRrOH1U.png)
-- Choose **mongodb-atlas** in **SERVICE** drop-down list.
-- Choose **insert** in **ACTION** drop-down list.
-- Enter the following into the pipeline arguments text field
-```
-{
-  "database": "testdb",
-  "collection": "data"
-}
-```
-- Click **Done**.
-![testInsertData second stage](https://imgur.com/uCekwSL.png)
-- Make sure your **testInsertData** pipeline looks like this: 
-![testInsertData pipeline](https://imgur.com/sWu6340.png)
-- Click **SAVE**.
+- Click **Save**.
+![testInsertData code](../png/Sender3.png?raw=true)
 
 ### Additional Setup for DataReceiver Example
 
 This must be performed **before** you run **DataReceiver** example code. 
 
 In this section the following MongoDB Stitch entities are created and configured:
-- MongoDB Stitch Named Pipeline **testFindData** that will be used to receive data from the MongoDB Collection configured in the previous steps
-- MongoDB Stitch Named Pipeline **testConfirmData** that will be used to confirm the data receiving
+- MongoDB Stitch Function **testFindData** that will be used to receive data from the MongoDB Collection configured in the previous steps
+- MongoDB Stitch Function **testConfirmData** that will be used to confirm the data receiving
 
-##### Create MongoDB Stitch Named Pipeline: testFindData
+##### Create MongoDB Stitch Function: testFindData
 
 - In your [MongoDB Atlas account](https://cloud.mongodb.com) select your Stitch Application, created during the previous steps.
-- Click **Pipelines** in the **CONTROL** menu and click the **NEW PIPELINE** button.
-![New Pipeline](https://imgur.com/Pm5ZXwi.png)
-- Enter `testFindData` into **New Pipeline Name** field.
-- Click **EDIT** in the pipeline Stage.
-![testFindData Stage](https://imgur.com/LKuDmYZ.png)
-- Choose **mongodb-atlas** in **SERVICE** drop-down list.
-- Choose **find** in **ACTION** drop-down list.
-- Enter the following into the pipeline arguments text field
+- Click **Functions** in the **CONTROL** menu and click the **Create New Function** button.
+![New Function](../png/Receiver1.png?raw=true)
+- Enter `testFindData` into **Function Name** field.
+- Click **Function Editor** tab.
+![testFindData Function](../png/Receiver2.png?raw=true)
+- Enter the following code into the Function Editor text field
 ```
-{
-  "database": "testdb",
-  "collection": "data",
-  "query": { "received" : false },
-  "project": {},
-  "limit": 10
-}
+exports = function() {
+  var collection = context.services.get("mongodb-atlas").db('testdb').collection('data');
+  return collection.find({ "received" : false }).limit(10).toArray();
+};
 ```
-- Click **Done**.
-![testFindData config](https://imgur.com/M5Yq6hv.png)
-- Make sure your **testFindData** pipeline looks like this: 
-![testFindData pipeline](https://imgur.com/MJJ64qZ.png)
-- Click **SAVE**.
+- Click **Save**.
+![testFindData code](../png/Receiver3.png?raw=true)
 
-##### Create MongoDB Stitch Named Pipeline: testConfirmData
+##### Create MongoDB Stitch Function: testConfirmData
 
-- Click the **NEW PIPELINE** button.
-- Enter `testConfirmData` into **New Pipeline Name** field.
-- Click **+ ADD PARAMETER**.
-- Enter `ids` into **Parameter Name** field.
-- Set the **Required** switch to enabled.
-![testConfirmData config](https://imgur.com/QjTrmka.png)
-- Click **EDIT** in the pipeline Stage.
-![testConfirmData Stage](https://imgur.com/k3RYmrA.png)
-- Set the **Bind data to %%vars** switch to enabled.
-- Enter `{ "ids" : "%%args.ids" }` into **Bind data** text field.
-![testConfirmData vars](https://imgur.com/rWg7RN1.png)
-- Choose **mongodb-atlas** in **SERVICE** drop-down list.
-- Choose **update** in **ACTION** drop-down list.
-- Enter the following into the pipeline arguments text field
+- Click **Functions** in the **CONTROL** menu and click the **Create New Function** button.
+![New Function](../png/Receiver4.png?raw=true)
+- Enter `testConfirmData` into **Function Name** field.
+- Click **Function Editor** tab.
+![testConfirmData Function](../png/Receiver5.png?raw=true)
+- Enter the following code into the Function Editor text field
 ```
-{
-  "database": "testdb",
-  "collection": "data",
-  "query": {
-    "_id": { "$in" : "%%vars.ids" }
-  },
-  "update": {
-    "$set": { "received": true }
-  },
-  "upsert": false,
-  "multi": true
-}
+exports = function(ids) {
+  var collection = context.services.get("mongodb-atlas").db('testdb').collection('data');
+  return collection.updateMany({ "_id" : { "$in" : ids } }, { "$set" : { "received" : true } });
+};
 ```
-- Click **Done**.
-![testConfirmData Stage config](https://imgur.com/UqxmFoC.png)
-- Make sure your **testConfirmData** pipeline looks like this: 
-![testConfirmData pipeline](https://imgur.com/zgv7jXv.png)
-- Click **SAVE**.
+- Click **Save**.
+![testConfirmData code](../png/Receiver6.png?raw=true)

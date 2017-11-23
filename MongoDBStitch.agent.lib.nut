@@ -27,7 +27,7 @@
 //
 // The current library version supports the following functionality:
 // - login to MongoDB Stitch using an application API key
-// - executing MongoDB Stitch Named Pipelines
+// - executing MongoDB Stitch Functions
 
 // MongoDBStitch library operation error types
 enum MONGO_DB_STITCH_ERROR {
@@ -46,6 +46,7 @@ enum MONGO_DB_STITCH_ERROR {
 // Error details produced by the library
 const MONGO_DB_STITCH_UNAUTHORIZED = "Unauthorized request";
 const MONGO_DB_STITCH_REQUEST_FAILED = "MongoDB Stitch request failed with status code";
+const MONGO_DB_STITCH_REFRESH_TOKEN_FAILED = "MongoDB Stitch refresh token request failed";
 const MONGO_DB_STITCH_NON_EMPTY_ARG = "Non empty argument required";
 
 // Auxiliary class, represents error returned by the library.
@@ -73,13 +74,13 @@ class MongoDBStitchError {
 }
 
 // Internal MongoDBStitch library constants
-const _MONGO_DB_STITCH_BASE_URL = "https://stitch.mongodb.com/api/client/v1.0";
+const _MONGO_DB_STITCH_BASE_URL = "https://stitch.mongodb.com/api/client/v2.0";
 
 class MongoDBStitch {
     static VERSION = "1.0.0";
 
     _appId = null;
-    _appUrl = null;
+    _appPath = null;
     _accessToken = null;
     _refreshToken = null;
     _debug = null;
@@ -93,7 +94,7 @@ class MongoDBStitch {
     constructor(appId) {
         _appId = appId;
         if (appId) {
-            _appUrl = format("%s/app/%s", _MONGO_DB_STITCH_BASE_URL, appId);
+            _appPath = format("/app/%s", appId);
         }
     }
 
@@ -120,16 +121,21 @@ class MongoDBStitch {
             return;
         }
 
-        _processRequest("POST", "/auth/api/key", { "key" : apiKey }, { "isAuth" : true }, callback);
+        _processRequest(
+            "POST",
+            _appPath + "/auth/providers/api-key/login",
+            { "key" : apiKey },
+            { "isAuth" : true },
+            callback);
     }
 
-    // Executes a MongoDB Stitch Named Pipeline.
-    // The pipeline should exist in the Stitch application.
+    // Executes the specified MongoDB Stitch Function.
+    // The Function should exist in the Stitch application.
     //
     // Parameters:
-    //     name : string             Name of the Named Pipeline.
-    //     args : table              Input parameters for the Named Pipeline.
-    //         (optional)            Key-value table, where key is a string, value is any type.
+    //     name : string             Name of the Function.
+    //     args : array of any type  Input parameters for the Function.
+    //         (optional)
     //     callback : function       Optional callback function executed once the operation
     //         (optional)            is completed.
     //                               The callback signature:
@@ -141,22 +147,20 @@ class MongoDBStitch {
     //                                                         decoded from JSON.
     //
     // Returns:                      Nothing
-    function executeNamedPipeline(name, args = null, callback = null) {
+    function executeFunction(name, args = null, callback = null) {
         local error = _validateNonEmptyArg(name, "name");
         if (error) {
             _invokeCallback(error, null, callback);
             return;
         }
-
-        local namedPipelineStages = [{
-            "service" : "",
-            "action" : "namedPipeline",
-            "args" : {
-                "name" : name,
-                "args" : args
-            }
-        }];
-        _executePipeline(namedPipelineStages, callback);
+        if (args == null) {
+            args = [];
+        }
+        local body = {
+            "name" : name,
+            "arguments" : args
+        };
+        _processRequest("POST", _appPath + "/functions/call", body, null, callback);
     }
 
     // Enables/disables the library debug output (including errors logging).
@@ -172,14 +176,9 @@ class MongoDBStitch {
 
     // -------------------- PRIVATE METHODS -------------------- //
 
-    // Executes MongoDB Stitch pipeline
-    function _executePipeline(stages, callback = null) {
-        _processRequest("POST", "/pipeline", stages, null, callback);
-    }
-
     // Retrieves a new access token from refresh token
     function _refreshAccessToken(callback) {
-        _processRequest("POST", "/auth/newAccessToken", null, { "isAuth" : true, "useRefreshToken" : true }, callback);
+        _processRequest("POST", "/auth/session", null, { "isAuth" : true, "useRefreshToken" : true }, callback);
     }
 
     // Sends an http request to MongoDB Stitch service
@@ -193,7 +192,7 @@ class MongoDBStitch {
         if (!options) {
             options = {};
         }
-        local url = _appUrl + path;
+        local url = _MONGO_DB_STITCH_BASE_URL + path;
         local headers = {
             "Accept" : "application/json",
             "Content-Type" : "application/json"
@@ -248,6 +247,7 @@ class MongoDBStitch {
             && _getTableValue(options, "refreshOnFailure", false)) {
             _refreshAccessToken(function (error, response) {
                 if (error) {
+                    error.details = MONGO_DB_STITCH_REFRESH_TOKEN_FAILED;
                     _invokeCallback(error, response, callback);
                 } else {
                     options.refreshOnFailure = false;
@@ -277,11 +277,11 @@ class MongoDBStitch {
 
     // Saves access and refresh tokens from response
     function _setTokens(response) {
-        local accessToken = _getTableValue(response, "accessToken", null);
+        local accessToken = _getTableValue(response, "access_token", null);
         if (accessToken) {
             _accessToken = accessToken;
         }
-        local refreshToken = _getTableValue(response, "refreshToken", null);
+        local refreshToken = _getTableValue(response, "refresh_token", null);
         if (refreshToken) {
             _refreshToken = refreshToken;
         }

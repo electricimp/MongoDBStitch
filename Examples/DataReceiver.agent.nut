@@ -26,11 +26,11 @@
 
 // MongoDBStitch library sample. 
 // Periodically receives new data from MongoDB and confirms data receiving 
-// using pre-configured MongoDB Stitch named pipelines.
+// using pre-configured MongoDB Stitch Functions.
 // Data are received every 15 seconds and printed to the log.
 
-const MONGO_DB_STITCH_FIND_DATA_PIPELINE = "testFindData";
-const MONGO_DB_STITCH_CONFIRM_DATA_PIPELINE = "testConfirmData";
+const MONGO_DB_STITCH_FIND_DATA_FUNCTION = "testFindData";
+const MONGO_DB_STITCH_CONFIRM_DATA_FUNCTION = "testConfirmData";
 const RECEIVE_DATA_PERIOD = 15.0;
 
 class DataReceiver {
@@ -43,27 +43,26 @@ class DataReceiver {
     }
 
     // Periodically receives new data from MongoDB and confirms data receiving using
-    // pre-configured MongoDB Stitch named pipeline
+    // pre-configured MongoDB Stitch Functions
     function receiveData() {
-        _stitchClient.executeNamedPipeline(
-            MONGO_DB_STITCH_FIND_DATA_PIPELINE,
+        _stitchClient.executeFunction(
+            MONGO_DB_STITCH_FIND_DATA_FUNCTION,
             null,
             function (error, response) {
                 if (error) {
                     server.error("Data receiving failed: " + error.details);
                 } else {
-                    local records = response.result[0];
-                    if (records.len() > 0) {
+                    if (response.len() > 0) {
                         local ids = [];
                         server.log("Data received:");
-                        foreach (record in records) {
+                        foreach (record in response) {
                             server.log(http.jsonencode(record.data));
                             ids.push(record._id);
                         }
                         // Confirm data receiving
-                        _stitchClient.executeNamedPipeline(
-                            MONGO_DB_STITCH_CONFIRM_DATA_PIPELINE,
-                            { "ids" : ids },
+                        _stitchClient.executeFunction(
+                            MONGO_DB_STITCH_CONFIRM_DATA_FUNCTION,
+                            [ ids ],
                             function (error, response) {
                                 if (error) {
                                     server.error("Confirm data receiving failed: " + error.details);

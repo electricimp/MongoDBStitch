@@ -25,11 +25,11 @@
 #require "MongoDBStitch.agent.lib.nut:1.0.0"
 
 // MongoDBStitch library sample.
-// Periodically sends data to MongoDB using pre-configured MongoDB Stitch named pipeline.
+// Periodically sends data to MongoDB using pre-configured MongoDB Stitch Function.
 // Data are sent every 10 seconds, they consist of integer increasing value, converted to string
 // and measureTime attribute with data measurement time in seconds since the epoch format.
 
-const MONGO_DB_STITCH_INSERT_DATA_PIPELINE = "testInsertData";
+const MONGO_DB_STITCH_INSERT_DATA_FUNCTION = "testInsertData";
 const SEND_DATA_PERIOD = 10.0;
 
 class DataSender {
@@ -46,25 +46,23 @@ class DataSender {
     function getData() {
         _counter++;
         return {
-            "data" : {
-                "value" : _counter.tostring(),
-                "measureTime" : time().tostring()
-            }
+            "value" : _counter.tostring(),
+            "measureTime" : time().tostring()
         };
     }
 
-    // Periodically sends data to MongoDB using pre-configured MongoDB Stitch named pipeline
+    // Periodically sends data to MongoDB using pre-configured MongoDB Stitch Function
     function sendData() {
         local data = getData();
-        _stitchClient.executeNamedPipeline(
-            MONGO_DB_STITCH_INSERT_DATA_PIPELINE,
-            data,
+        _stitchClient.executeFunction(
+            MONGO_DB_STITCH_INSERT_DATA_FUNCTION,
+            [ data ],
             function (error, response) {
                 if (error) {
                     server.error("Data insertion failed: " + error.details);
                 } else {
                     server.log("Data inserted successfully:");
-                    server.log(http.jsonencode(data.data));
+                    server.log(http.jsonencode(data));
                 }
             }.bindenv(this));
 
