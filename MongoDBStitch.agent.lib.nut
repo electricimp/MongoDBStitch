@@ -243,7 +243,7 @@ class MongoDBStitch {
         
         // try to refresh token in case it is expired
         if (errType == MONGO_DB_STITCH_ERROR.MONGO_DB_STITCH_REQUEST_FAILED
-            && httpStatus == 401 && _getTableValue(response.body, "errorCode", null) == "InvalidSession"
+            && httpStatus == 401 && _getTableValue(response.body, "error_code", null) == "InvalidSession"
             && _getTableValue(options, "refreshOnFailure", false)) {
             _refreshAccessToken(function (error, response) {
                 if (error) {
