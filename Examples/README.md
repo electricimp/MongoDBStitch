@@ -7,7 +7,7 @@ This document describes the example applications provided with the [MongoDBStitc
 
 You should run the *DataReceiver* example after or in parallel with *DataSender* example. We recommend that you run *DataSender* on the agent of one imp and run *DataReceiver* on the agent of a second imp.
 
-Each example is described first; you will find generic and example-specific [setup instructions](#examples-setup-and-run) further down the page.
+Each example is described first; you will find generic and example-specific [setup instructions](#using-the-examples) further down the page.
 
 ## DataSender ##
 
