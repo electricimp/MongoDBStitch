@@ -137,7 +137,7 @@ This must be performed *before* you run *DataSender*.
 
 In this section, the following MongoDB Stitch entities are created and configured:
 
-- The MongoDB Stitch Function **testInsertData** that will be used to store *DataSender* data in the MongoDB Collection configured in the previous steps.
+- The MongoDB Stitch Function *testInsertData* that will be used to store *DataSender* data in the MongoDB Collection configured in the previous steps.
 
 ### Create MongoDB Stitch Function: testInsertData ###
 
@@ -163,8 +163,8 @@ This must be performed *before* you run *DataReceiver*.
 
 In this section, the following MongoDB Stitch entities are created and configured:
 
-- The MongoDB Stitch Function **testFindData** that will be used to receive data from the MongoDB Collection configured in the previous steps.
-- The MongoDB Stitch Function **testConfirmData** that will be used to confirm the data has been received.
+- The MongoDB Stitch Function *testFindData* that will be used to receive data from the MongoDB Collection configured in the previous steps.
+- The MongoDB Stitch Function *testConfirmData* that will be used to confirm the data has been received.
 
 ### Create MongoDB Stitch Function: testFindData ###
 
