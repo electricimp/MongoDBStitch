@@ -8,7 +8,6 @@ before_script:
 - cd imp-central-impt
 - npm i -g
 - cd ..
-- rm -rf imp-central-impt
 
 script:
 - impt test run
