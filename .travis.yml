@@ -1,7 +1,7 @@
 language: node_js
 
 node_js:
-- '5.5'
+- 'node'
 
 before_script:
 - git clone https://github.com/nobitlost/imp-central-impt.git imp-central-impt
