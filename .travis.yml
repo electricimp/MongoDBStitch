@@ -10,3 +10,6 @@ before_script:
 
 script:
 - impt test run
+
+before_install:
+- openssl aes-256-cbc -K $encrypted_f88151e988d8_key -iv $encrypted_f88151e988d8_iv -in .impt.auth.enc -out .impt.auth -d
