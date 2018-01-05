@@ -10,6 +10,7 @@ before_script:
 - cd ..
 
 script:
+- impt auth info
 - impt test run
 
 before_install:
