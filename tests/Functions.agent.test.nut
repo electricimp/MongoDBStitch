@@ -136,7 +136,7 @@ class FunctionsTestCase extends ImpTestCase {
             function (value) {
                 _stitchClient.executeFunction(DELETE_DATA_FUNCTION_NAME, null, function (error, response) {
                     if (error) {
-                        return reject(DELETE_DATA_FUNCTION_NAME + " function execution failed");
+                        return Promise.reject(DELETE_DATA_FUNCTION_NAME + " function execution failed");
                     } else {
                         local ids = [];
                         for (local i = 1; i <= _recordId; i++) {
