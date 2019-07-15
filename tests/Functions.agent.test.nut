@@ -43,6 +43,7 @@ class FunctionsTestCase extends ImpTestCase {
         return Promise(function (resolve, reject) {
             _stitchClient.loginWithApiKey(MONGO_DB_STITCH_API_KEY, function (error, response) {
                 if (error) {
+                    info(error);
                     return reject("loginWithApiKey failed");
                 }
                 // clean up imptest data
@@ -61,6 +62,7 @@ class FunctionsTestCase extends ImpTestCase {
         return Promise(function (resolve, reject) {
             _stitchClient.executeFunction(DELETE_DATA_FUNCTION_NAME, null, function (error, response) {
                 if (error) {
+                    info(error);
                     return reject(DELETE_DATA_FUNCTION_NAME + " function execution failed");
                 } else {
                     return resolve("");
@@ -107,6 +109,7 @@ class FunctionsTestCase extends ImpTestCase {
                     local newValue = "test_value";
                     _stitchClient.executeFunction(UPDATE_DATA_FUNCTION_NAME, [ id, newValue ], function (error, response) {
                         if (error) {
+                            info(error);
                             return reject(UPDATE_DATA_FUNCTION_NAME + " function execution failed");
                         } else {
                             _findDataById(id).
@@ -136,6 +139,7 @@ class FunctionsTestCase extends ImpTestCase {
             function (value) {
                 _stitchClient.executeFunction(DELETE_DATA_FUNCTION_NAME, null, function (error, response) {
                     if (error) {
+                        info(error);
                         return Promise.reject(DELETE_DATA_FUNCTION_NAME + " function execution failed");
                     } else {
                         local ids = [];
@@ -172,6 +176,7 @@ class FunctionsTestCase extends ImpTestCase {
                 local testedId = _recordId - 1;
                 _stitchClient.executeFunction(DELETE_ONE_FUNCTION_NAME, [ testedId.tostring() ], function (error, response) {
                     if (error) {
+                        info(error);
                         return Promise.reject(DELETE_ONE_FUNCTION_NAME + " function execution failed");
                     } else {
                         _findDataById(testedId).then(
@@ -198,6 +203,7 @@ class FunctionsTestCase extends ImpTestCase {
         return Promise(function (resolve, reject) {
             _stitchClient.executeFunction(FIND_DATA_FUNCTION_NAME, [ id.tostring() ], function (error, response) {
                 if (error) {
+                    info(error);
                     return reject(FIND_DATA_FUNCTION_NAME + " function execution failed");
                 } else {
                     if (response && typeof response == "array") {
@@ -214,6 +220,7 @@ class FunctionsTestCase extends ImpTestCase {
         return Promise(function (resolve, reject) {
             _stitchClient.executeFunction(INSERT_DATA_FUNCTION_NAME, _getData(), function (error, response) {
                 if (error) {
+                    info(error);
                     return reject(INSERT_DATA_FUNCTION_NAME + " function execution failed");
                 } else {
                     return resolve("");
