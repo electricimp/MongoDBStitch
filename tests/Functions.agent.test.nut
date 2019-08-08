@@ -60,7 +60,7 @@ class FunctionsTestCase extends ImpTestCase {
 
     function tearDown() {
         return Promise(function (resolve, reject) {
-            _stitchClient.executeFunction(DELETE_DATA_FUNCTION_NAME, null, function (error, response) {
+            _stitchClient.executeFunction(DELETE_DATA_FUNCTION_NAME, "", function (error, response) {
                 if (error) {
                     info(error);
                     return reject(DELETE_DATA_FUNCTION_NAME + " function execution failed");
@@ -139,7 +139,7 @@ class FunctionsTestCase extends ImpTestCase {
         return Promise.all(arr.map(function (val) { return _insertData(); }.bindenv(this)))
             .then(
                 function (value) {
-                    _stitchClient.executeFunction(DELETE_DATA_FUNCTION_NAME, null, function (error, response) {
+                    _stitchClient.executeFunction(DELETE_DATA_FUNCTION_NAME, "", function (error, response) {
                         if (error) {
                             return Promise.reject(DELETE_DATA_FUNCTION_NAME + " function execution failed");
                         } else {
