@@ -9,6 +9,8 @@ The tests are written for and should be used with [impTest](https://github.com/e
 
 The tests for MongoDBStitch library require pre-setup described below.
 
+**Note** MongoDBStitch web UI has updated so some screenshots may be different.
+
 ## MongoDB Stitch Account Configuration
 
 ### Create MongoDB Atlas Cluster
@@ -28,7 +30,7 @@ The tests for MongoDBStitch library require pre-setup described below.
 ### Create MongoDB Stitch Application
 
 - If you have an existing Stitch Application that you want to work with, skip this step, otherwise 
-  - Click **Stitch Apps** in the **PROJECT** menu and click **Create New Application** button.
+  - Click **Stitch** in the **Services** menu and click **Create New Application** button.
   ![Create new app](../png/CreateApp1.png?raw=true)
   - In the **Create a new application** pop up
     - Enter **Application Name**, e.g. `testApp`.
@@ -43,11 +45,11 @@ The tests for MongoDBStitch library require pre-setup described below.
 
 ### Enable API Key Authentication for the Stitch Application
 
-- Click **Authentication** in the **CONTROL** menu.
+- Click **Users** in the **CONTROL** menu and select the **Providers** tab.
 - Click **Edit** for **API Keys** provider.
   ![Edit Api Keys](../png/CreateApiKey1.png?raw=true)
-- In the **Edit Auth Provider** pop up
-  - Set the **API Keys** switch to enabled.
+- On the **Edit Auth Provider** page
+  - Set the **Provider Enabled** switch to enabled.
   - Click **CREATE API KEY**.
     ![Create Api Key](../png/CreateApiKey2.png?raw=true)
   - Enter a name for the API key into the text input, e.g. `test`.
@@ -55,28 +57,17 @@ The tests for MongoDBStitch library require pre-setup described below.
     ![Save Api Key](../png/CreateApiKey3.png?raw=true)
   - Copy (click **COPY**) and save somewhere **API key** of your Stitch application. It will be used as the value of *MONGO_DB_STITCH_API_KEY* environment variable.
     ![Copy Api Key](../png/CreateApiKey4.png?raw=true)
-  - Close the **Edit Auth Provider** pop up.
 
 ### Create MongoDB Collection
 
-- Click **mongodb-atlas** in the **ATLAS CLUSTERS** menu and click **NEW** for **MongoDB Collections**.
+- Click **Rules** in the **MONGODB CLUSTERS** menu and click **add Collection**.
 ![New Collection](../png/CreateCollection1.png?raw=true)
 - Enter `imptest` into **Database** name and `data` into **Collection** name.
-- Click **CREATE**.
+- Select **No Template**
+- Click **Add Collection**.
 - Click to your newly created collection.
-- Click **Top-Level Document**.
-- Modify **READ** permission on top-level document to `{}`.
-- Modify **WRITE** permission on top-level document to `{}`.
+- Click **Read** and **Write** check boxes in **Fields** row.
 - Click **SAVE**.
-![Top-Level Document Modification](../png/CreateTestCollection1.png?raw=true)
-- Click **owner_id** field.
-- Click the **delete** (**x**) on the right side.
-![Delete owner_id](../png/CreateTestCollection2.png?raw=true)
-- In the confirmation pop up click **Delete Field** to confirm **owner_id** field deleting.
-- Click **SAVE**.
-- Click the **Filters** tab.
-- Click **DELETE** for the existing filter and click **SAVE**.
-![Collection Filters](../png/CreateTestCollection3.png?raw=true)
 
 ### Create MongoDB Stitch Functions
 
@@ -89,7 +80,7 @@ The tests for MongoDBStitch library require pre-setup described below.
 ```
 exports = function() {
   var collection = context.services.get("mongodb-atlas").db('imptest').collection('data');
-  return collection.deleteMany();
+  return collection.deleteMany({});
 };
 ```
 - Click **Save**.

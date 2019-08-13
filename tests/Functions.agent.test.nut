@@ -43,14 +43,15 @@ class FunctionsTestCase extends ImpTestCase {
         return Promise(function (resolve, reject) {
             _stitchClient.loginWithApiKey(MONGO_DB_STITCH_API_KEY, function (error, response) {
                 if (error) {
+                    info(error);
                     return reject("loginWithApiKey failed");
                 }
                 // clean up imptest data
-                tearDown().
-                    then(function (value) {
+                tearDown()
+                    .then(function (value) {
                         return resolve(value);
-                    }.bindenv(this)).
-                    fail(function (reason) {
+                    }.bindenv(this))
+                    .fail(function (reason) {
                         return reject(reason);
                     }.bindenv(this));
             }.bindenv(this));
@@ -61,6 +62,7 @@ class FunctionsTestCase extends ImpTestCase {
         return Promise(function (resolve, reject) {
             _stitchClient.executeFunction(DELETE_DATA_FUNCTION_NAME, null, function (error, response) {
                 if (error) {
+                    info(error);
                     return reject(DELETE_DATA_FUNCTION_NAME + " function execution failed");
                 } else {
                     return resolve("");
@@ -73,58 +75,60 @@ class FunctionsTestCase extends ImpTestCase {
         local elementsNumber = 5;
         local startId = _recordId + 1;
         local arr = array(elementsNumber, 0);
-        return Promise.all(arr.map(function (val) { return _insertData(); }.bindenv(this))).
-            then(function (value) {
+
+        return Promise.all(arr.map(function (val) { return _insertData(); }.bindenv(this)))
+            .then(function (value) {
                 local ids = [];
                 for (local i = startId; i <= _recordId; i++) {
                     ids.push(i);
                 }
                 return Promise.all(ids.map(function (val) {
-                    return _findDataById(val).
-                        then(function (value) {
+                    return _findDataById(val)
+                        .then(function (value) {
                             if (value.len() > 0) {
                                 return Promise.resolve("");
                             } else {
                                 return Promise.reject("inserted data not found");
                             }
-                        }.bindenv(this)).
-                        fail(function (reason) {
+                        }.bindenv(this))
+                        .fail(function (reason) {
                             return Promise.reject(reason);
                         }.bindenv(this)
                     );
                 }.bindenv(this)));
-            }.bindenv(this)).
-            fail(function (reason) {
+            }.bindenv(this))
+            .fail(function (reason) {
                 return Promise.reject(reason);
             }.bindenv(this));
     }
 
     function testUpdateData() {
-        _insertData().
-            then(function (value) {
+        _insertData()
+            .then(function (value) {
                 return Promise(function (resolve, reject) {
                     local id = _recordId.tostring()
                     local newValue = "test_value";
                     _stitchClient.executeFunction(UPDATE_DATA_FUNCTION_NAME, [ id, newValue ], function (error, response) {
                         if (error) {
+                            info(error);
                             return reject(UPDATE_DATA_FUNCTION_NAME + " function execution failed");
                         } else {
-                            _findDataById(id).
-                                then(function (value) {
+                            _findDataById(id)
+                                .then(function (value) {
                                     if (value.len() == 1 && value[0].value == newValue ) {
                                         return resolve("");
                                     } else {
                                         return reject("data update failed");
                                     }
-                                }.bindenv(this)).
-                                fail(function (reason) {
+                                }.bindenv(this))
+                                .fail(function (reason) {
                                     return reject(reason);
                                 }.bindenv(this));
                         }
                     }.bindenv(this));
                 }.bindenv(this));
-            }.bindenv(this)).
-            fail(function (reason) {
+            }.bindenv(this))
+            .fail(function (reason) {
                 return Promise.reject(reason);
             }.bindenv(this));
     }
@@ -132,18 +136,55 @@ class FunctionsTestCase extends ImpTestCase {
     function testDeleteData() {
         local elementsNumber = 5;
         local arr = array(elementsNumber, 0);
-        return Promise.all(arr.map(function (val) { return _insertData(); }.bindenv(this))).then(
-            function (value) {
-                _stitchClient.executeFunction(DELETE_DATA_FUNCTION_NAME, null, function (error, response) {
-                    if (error) {
-                        return reject(DELETE_DATA_FUNCTION_NAME + " function execution failed");
-                    } else {
-                        local ids = [];
-                        for (local i = 1; i <= _recordId; i++) {
-                            ids.push(i);
+        return Promise.all(arr.map(function (val) { return _insertData(); }.bindenv(this)))
+            .then(
+                function (value) {
+                    _stitchClient.executeFunction(DELETE_DATA_FUNCTION_NAME, null, function (error, response) {
+                        if (error) {
+                            return Promise.reject(DELETE_DATA_FUNCTION_NAME + " function execution failed");
+                        } else {
+                            local ids = [];
+                            for (local i = 1; i <= _recordId; i++) {
+                                ids.push(i);
+                            }
+                            return Promise.all(ids.map(function (val) {
+                                return _findDataById(val)
+                                    .then(
+                                        function (value) {
+                                            if (value.len() > 0) {
+                                                return Promise.reject("data not deleted");
+                                            } else {
+                                                return Promise.resolve("");
+                                            }
+                                        }.bindenv(this),
+                                        function (reason) {
+                                            return Promise.reject(reason);
+                                        }.bindenv(this)
+                                    );
+                            }.bindenv(this)));
                         }
-                        return Promise.all(ids.map(function (val) {
-                            return _findDataById(val).then(
+                    }.bindenv(this));
+                }.bindenv(this),
+                function (reason) {
+                    return Promise.reject(reason);
+                }.bindenv(this)
+            );
+    }
+
+    function testDeleteOne() {
+        local elementsNumber = 5;
+        local arr = array(elementsNumber, 0);
+
+        return Promise.all(arr.map(function (val) { return _insertData(); }.bindenv(this)))
+            .then(function (value) {
+                local testedId = _recordId - 1;
+                _stitchClient.executeFunction(DELETE_ONE_FUNCTION_NAME, [ testedId.tostring() ], function (error, response) {
+                    if (error) {
+                        info(error);
+                        return Promise.reject(DELETE_DATA_FUNCTION_NAME + " function execution failed");
+                    } else {
+                        _findDataById(testedId)
+                            .then(
                                 function (value) {
                                     if (value.len() > 0) {
                                         return Promise.reject("data not deleted");
@@ -155,37 +196,6 @@ class FunctionsTestCase extends ImpTestCase {
                                     return Promise.reject(reason);
                                 }.bindenv(this)
                             );
-                        }.bindenv(this)));
-                    }
-                }.bindenv(this));
-            }.bindenv(this),
-            function (reason) {
-                return Promise.reject(reason);
-            }.bindenv(this));
-    }
-
-    function testDeleteOne() {
-        local elementsNumber = 5;
-        local arr = array(elementsNumber, 0);
-        return Promise.all(arr.map(function (val) { return _insertData(); }.bindenv(this))).then(
-            function (value) {
-                local testedId = _recordId - 1;
-                _stitchClient.executeFunction(DELETE_ONE_FUNCTION_NAME, [ testedId.tostring() ], function (error, response) {
-                    if (error) {
-                        return Promise.reject(DELETE_ONE_FUNCTION_NAME + " function execution failed");
-                    } else {
-                        _findDataById(testedId).then(
-                            function (value) {
-                                if (value.len() > 0) {
-                                    return Promise.reject("data not deleted");
-                                } else {
-                                    return Promise.resolve("");
-                                }
-                            }.bindenv(this),
-                            function (reason) {
-                                return Promise.reject(reason);
-                            }.bindenv(this)
-                        );
                     }
                 }.bindenv(this));
             }.bindenv(this),
@@ -198,6 +208,7 @@ class FunctionsTestCase extends ImpTestCase {
         return Promise(function (resolve, reject) {
             _stitchClient.executeFunction(FIND_DATA_FUNCTION_NAME, [ id.tostring() ], function (error, response) {
                 if (error) {
+                    info(error);
                     return reject(FIND_DATA_FUNCTION_NAME + " function execution failed");
                 } else {
                     if (response && typeof response == "array") {
@@ -214,6 +225,7 @@ class FunctionsTestCase extends ImpTestCase {
         return Promise(function (resolve, reject) {
             _stitchClient.executeFunction(INSERT_DATA_FUNCTION_NAME, _getData(), function (error, response) {
                 if (error) {
+                    info(error);
                     return reject(INSERT_DATA_FUNCTION_NAME + " function execution failed");
                 } else {
                     return resolve("");
