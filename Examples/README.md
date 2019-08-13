@@ -9,6 +9,8 @@ You should run the *DataReceiver* example after or in parallel with *DataSender*
 
 Each example is described first; you will find generic and example-specific [setup instructions](#using-the-examples) further down the page.
 
+**Note** MongoDBStitch has made some updates to their web page, so screenshots in instructions may not match the current MongoDBStitch UI.
+
 ## DataSender ##
 
 This example inserts data into a preconfigured MongoDB collection using a predefined MongoDB Stitch Function:
